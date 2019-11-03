@@ -11,11 +11,14 @@ import (
 // getBytes casts the input json bytes to a string and safely returns the
 // results as uniquely allocated data. This operation is intended to minimize
 // copies and allocations for the large json string->[]byte.
-func getBytes(json []byte, path string) Result {
+func (g *GJSON) getBytes(json []byte, path string) Result {
 	var result Result
+	if g == nil {
+		panic("g is nil")
+	}
 	if json != nil {
 		// unsafe cast to string
-		result = Get(*(*string)(unsafe.Pointer(&json)), path)
+		result = g.Get(*(*string)(unsafe.Pointer(&json)), path)
 		// safely get the string headers
 		rawhi := *(*reflect.StringHeader)(unsafe.Pointer(&result.Raw))
 		strhi := *(*reflect.StringHeader)(unsafe.Pointer(&result.Str))

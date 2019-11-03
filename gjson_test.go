@@ -336,11 +336,11 @@ func TestTypes(t *testing.T) {
 }
 func TestForEach(t *testing.T) {
 	Result{}.ForEach(nil)
-	Result{Type: String, Str: "Hello"}.ForEach(func(_, value Result) bool {
+	Result{Type: String, Str: "Hello", g: std}.ForEach(func(_, value Result) bool {
 		assert(t, value.String() == "Hello")
 		return false
 	})
-	Result{Type: JSON, Raw: "*invalid*"}.ForEach(nil)
+	Result{Type: JSON, Raw: "*invalid*", g: std}.ForEach(nil)
 
 	json := ` {"name": {"first": "Janet","last": "Prichard"},
 	"asd\nf":"\ud83d\udd13","age": 47}`
@@ -362,7 +362,7 @@ func TestMap(t *testing.T) {
 	assert(t, Result{Type: JSON, Raw: "{"}.Map() != nil)
 }
 func TestBasic1(t *testing.T) {
-	mtok := get(basicJSON, `loggy.programmers`)
+	mtok := Get(basicJSON, `loggy.programmers`)
 	var count int
 	mtok.ForEach(func(key, value Result) bool {
 		if key.Exists() {
@@ -1471,17 +1471,18 @@ func TestArrayValues(t *testing.T) {
 		if i > 0 {
 			output += "\n"
 		}
+		val.g = nil
 		output += fmt.Sprintf("%#v", val)
 	}
 	expect := strings.Join([]string{
 		`gjson.Result{Type:3, Raw:"\"PERSON1\"", Str:"PERSON1", Num:0, ` +
-			`Index:0}`,
+			`Index:0, g:(*gjson.GJSON)(nil)}`,
 		`gjson.Result{Type:3, Raw:"\"PERSON2\"", Str:"PERSON2", Num:0, ` +
-			`Index:0}`,
-		`gjson.Result{Type:2, Raw:"0", Str:"", Num:0, Index:0}`,
+			`Index:0, g:(*gjson.GJSON)(nil)}`,
+		`gjson.Result{Type:2, Raw:"0", Str:"", Num:0, Index:0, g:(*gjson.GJSON)(nil)}`,
 	}, "\n")
 	if output != expect {
-		t.Fatalf("expected '%v', got '%v'", expect, output)
+		t.Fatalf("expected '%v',\ngot '%v'", expect, output)
 	}
 
 }
